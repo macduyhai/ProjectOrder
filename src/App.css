@@ -1,0 +1,120 @@
+html{
+  height: 100%;
+  width: 100%;
+}
+body{
+  height: 100%;
+  background-color: #fff!important;
+  font-size: 13px!important;
+}
+
+.MuiBox-root {
+  padding-left: 0!important;
+  padding-right: 0!important;
+}
+.highcharts-credits {
+  display: none;
+}
+#root {
+  height: 100%;
+}
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+.MuiAppBar-root {
+  z-index: 1000!important;
+}
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.pagination li {
+  margin-left: 0.4rem;
+}
+.pagination li a {
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-block;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -moz-justify-content: center;
+  -ms-justify-content: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  height: 2rem;
+  min-width: 2rem;
+  vertical-align: middle;
+  padding: 0.5rem;
+  text-align: center;
+  position: relative;
+  font-size: 1rem;
+  line-height: 1rem;
+  font-weight: 400;
+  border: 0;
+}
+.pagination li:first-child {
+  margin-left: 0px;
+}
+.pagination{
+  float: right;
+}
+.pagination .active a {
+  color: #fff;
+  background-color: #5867dd;
+  border-color: #5867dd;
+}
+.pagination .disabled a {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: auto;
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+.form_link  a{
+  color: rgba(0, 0, 0, 0.87)!important;
+}
+.form_link  a:hover{
+  text-decoration: none!important;
+}
+.form_link a.active>.MuiButtonBase-root {
+  background: #9e9e9e40;
+}

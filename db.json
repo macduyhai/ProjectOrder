@@ -1,0 +1,19 @@
+{
+  "posts": [
+    {
+      "name": "Tài",
+      "job": "Front-End 2",
+      "id": 9
+    },
+    {
+      "name": "Khải",
+      "job": "Dev",
+      "id": 11
+    },
+    {
+      "name": "fsdfsd",
+      "job": "xxczx",
+      "id": 12
+    }
+  ]
+}
