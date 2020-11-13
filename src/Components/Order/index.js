@@ -42,6 +42,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { KeyboardDatePicker } from '@material-ui/pickers';
+import { Checkbox } from '@material-ui/core';
 
 const useStyles = (theme) => ({
   button: {
@@ -118,6 +119,7 @@ class todoList extends Component {
       startDate: new Date(),
       endDate: new Date(),
       status: '',
+      listCheckBox: [],
     };
 
     this.itemsPerPage = 10;
@@ -154,7 +156,10 @@ class todoList extends Component {
         if (data.meta.Code === 200) {
           this.setState(
             {
-              listData: data.data,
+              listData: data.data.map((map, i) => ({
+                ...map,
+                id: i,
+              })),
               loadingImport: false,
             },
             () => {
@@ -408,6 +413,16 @@ class todoList extends Component {
     });
   };
 
+  sendMultipleOrder = () => {
+    if(this.state.listCheckBox.length === 0){
+      swal('Warning', 'You do not have any orders', 'warning');
+    }else{
+      console.log(this.state.listData.filter(filter => this.state.listCheckBox.some(some => some === filter.id)));
+    }
+    
+
+  }
+
   render() {
     const { classes } = this.props;
     let { openDialog, dataLabelDetail } = this.state;
@@ -522,6 +537,14 @@ class todoList extends Component {
             <div className="text-right col-md-4">
               <Button
                 variant="contained"
+                color="secondary"
+                className={classes.button}
+                onClick={() => this.sendMultipleOrder()}
+              >
+                <SendIcon /> Send Order
+              </Button>
+              <Button
+                variant="contained"
                 color="default"
                 className={classes.button}
                 startIcon={<CloudDownloadIcon />}
@@ -555,6 +578,7 @@ class todoList extends Component {
               <Table bordered hover>
                 <thead>
                   <tr>
+                    <th></th>
                     <th>STT</th>
                     <th>Order Number</th>
                     <th>Name</th>
@@ -597,6 +621,24 @@ class todoList extends Component {
                     }
                     return (
                       <tr key={index}>
+                        <td style={{ width: 50 }}>{
+                          value.status === 0 &&
+                          <Checkbox
+                            onChange={(e) => {
+                              if(e.target.checked === true){
+                                this.setState({
+                                  listCheckBox: [...this.state.listCheckBox, value.id]
+                                })
+                              }else{
+                                this.setState({
+                                  listCheckBox: this.state.listCheckBox.filter(filter => filter !== value.id)
+                                })
+                              }
+                            }}
+                            value="checkedA"
+                            inputProps={{ 'aria-label': 'Checkbox A' }}
+                          />
+                        }</td>
                         <td>{index + this.state.offset + 1}</td>
                         <td>{value.orderNumber}</td>
                         <td>{value.name}</td>
@@ -774,7 +816,6 @@ class todoList extends Component {
                                     return response.json();
                                   })
                                   .then((data) => {
-                                    console.log(data);
                                     if (data.meta.Code === 200) {
                                       toast('Delete Success!', {
                                         position: 'top-right',
@@ -801,6 +842,7 @@ class todoList extends Component {
                               <DeleteForeverIcon />
                             </IconButton>
                           )}
+                          
                           
                         </td>
                       </tr>
