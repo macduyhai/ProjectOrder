@@ -317,7 +317,6 @@ class ModalSend extends Component {
                 let lenghtWeeken = Moment(fromDay).isoWeekdayCalc(toDay,[6]);
                 data.timeCompleted = new Date(Moment(fromDay, "DD-MM-YYYY").add(parseInt(dayAdd - 1) + parseInt(lenghtWeeken*2), 'days'));
             }
-
             this.setState({
                 dataSend: data,
                 valueTime: 10

@@ -1,48 +1,50 @@
-import React, { Component } from 'react';
-import Table from 'react-bootstrap/Table';
-import Pagination from 'react-js-pagination';
-import IconButton from '@material-ui/core/IconButton';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import SendIcon from '@material-ui/icons/Send';
-import Input from '@material-ui/core/Input';
-import Button from '@material-ui/core/Button';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import EditIcon from '@material-ui/icons/Edit';
-import Chip from '@material-ui/core/Chip';
-import TimerOffIcon from '@material-ui/icons/TimerOff';
-import FilterNoneIcon from '@material-ui/icons/FilterNone';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import Moment from 'moment';
+import React, { Component } from "react";
+import Table from "react-bootstrap/Table";
+import Pagination from "react-js-pagination";
+import IconButton from "@material-ui/core/IconButton";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import SendIcon from "@material-ui/icons/Send";
+import Input from "@material-ui/core/Input";
+import Button from "@material-ui/core/Button";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
+import EditIcon from "@material-ui/icons/Edit";
+import Chip from "@material-ui/core/Chip";
+import TimerOffIcon from "@material-ui/icons/TimerOff";
+import FilterNoneIcon from "@material-ui/icons/FilterNone";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import Moment from "moment";
 //Modal
-import ModalSend from './ModalSend';
+import ModalSend from "./ModalSend";
 //importExcel
-import Files from 'react-files';
-import XLSX from 'xlsx';
-import { make_cols } from './MakeColumms';
+import Files from "react-files";
+import XLSX from "xlsx";
+import { make_cols } from "./MakeColumms";
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
-import { HOST2 } from '../../Config';
-import ModalViewData from './ModalViewData';
-import { withStyles } from '@material-ui/core/styles';
+import { HOST2 } from "../../Config";
+import ModalViewData from "./ModalViewData";
+import { withStyles } from "@material-ui/core/styles";
 
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import swal from 'sweetalert';
-import ModalEditShipping from './EditShipping';
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import swal from "sweetalert";
+import ModalEditShipping from "./EditShipping";
 
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import { Checkbox } from '@material-ui/core';
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import { KeyboardDatePicker } from "@material-ui/pickers";
+import { Checkbox } from "@material-ui/core";
+import Axios from "axios";
+import { time } from "highcharts";
 
 const useStyles = (theme) => ({
   button: {
@@ -60,29 +62,29 @@ const useStyles = (theme) => ({
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+    color: "#fff",
   },
   bg_processing: {
-    background: '#c4c5d6',
-    color: '#111',
+    background: "#c4c5d6",
+    color: "#111",
   },
   bg_shipping: {
-    background: '#ffb822',
-    color: '#fff',
+    background: "#ffb822",
+    color: "#fff",
   },
   bg_delay: {
-    background: '#f4516c',
-    color: '#fff',
+    background: "#f4516c",
+    color: "#fff",
   },
   bg_completed: {
-    background: '#00c5dc',
-    color: '#fff',
+    background: "#00c5dc",
+    color: "#fff",
   },
   formControl: {
     margin: theme.spacing(1),
     marginTop: 0,
     marginLeft: 0,
-    minWidth: '100%',
+    minWidth: "100%",
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -96,10 +98,10 @@ class todoList extends Component {
       listData: [],
       crrData: [],
       crrValInput: {
-        name: '',
-        job: '',
+        name: "",
+        job: "",
       },
-      valueSearch: '',
+      valueSearch: "",
       activePage: 1,
       totalItem: 0,
       offset: 0,
@@ -118,7 +120,7 @@ class todoList extends Component {
       dataLabelDetail: null,
       startDate: new Date(),
       endDate: new Date(),
-      status: '',
+      status: "",
       listCheckBox: [],
     };
 
@@ -135,16 +137,16 @@ class todoList extends Component {
       `${HOST2}/api/v1/orders/search?order_number=${encodeURIComponent(
         this.state.valueSearch
       )}&begin_time=${encodeURIComponent(
-        Moment(this.state.startDate).format('YYYY-MM-DD 00:00:00')
+        Moment(this.state.startDate).format("YYYY-MM-DD 00:00:00")
       )}&end_time=${encodeURIComponent(
-        Moment(this.state.endDate).format('YYYY-MM-DD 23:59:59')
+        Moment(this.state.endDate).format("YYYY-MM-DD 23:59:59")
       )}&status=${encodeURIComponent(
-        this.state.status !== '' ? parseInt(this.state.status) : ''
+        this.state.status !== "" ? parseInt(this.state.status) : ""
       )}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     )
@@ -152,7 +154,6 @@ class todoList extends Component {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         if (data.meta.Code === 200) {
           this.setState(
             {
@@ -208,7 +209,7 @@ class todoList extends Component {
       /* Parse data */
       const bstr = e.target.result;
       const wb = XLSX.read(bstr, {
-        type: rABS ? 'binary' : 'array',
+        type: rABS ? "binary" : "array",
         bookVBA: true,
       });
       /* Get first worksheet */
@@ -217,7 +218,7 @@ class todoList extends Component {
       /* Convert array of arrays */
       const data = XLSX.utils.sheet_to_json(ws);
       /* Update state */
-      this.setState({ listData: data, cols: make_cols(ws['!ref']) }, () => {
+      this.setState({ listData: data, cols: make_cols(ws["!ref"]) }, () => {
         let { listData } = this.state;
         if (listData.length === 0) return;
         listData[0].items = [
@@ -231,7 +232,7 @@ class todoList extends Component {
         let idOder = listData[0].orderNumber;
         let idOderNext;
         for (let index = 0; index < listData.length; index++) {
-          listData[index].postalCode = listData[index].postalCode + '';
+          listData[index].postalCode = listData[index].postalCode + "";
           //chcekOrder
           if (idOder !== listData[index].orderNumber) {
             idOder = listData[index].orderNumber;
@@ -259,7 +260,7 @@ class todoList extends Component {
             index--;
           }
         }
-        console.log(this.state.listData)
+        console.log(this.state.listData);
         this.setState(
           {
             listData,
@@ -282,18 +283,18 @@ class todoList extends Component {
   //Download
   downloadFormImport = () => {
     var url = window.location.href;
-    var urlImport = url.replace(this.props.location.pathname, '/');
-    window.location.href = urlImport + '_Import_Template.xlsx';
+    var urlImport = url.replace(this.props.location.pathname, "/");
+    window.location.href = urlImport + "_Import_Template.xlsx";
   };
 
   //Insert
   insertData = (dataInsert) => {
     this.setState({ loadingImport: true });
     fetch(`${HOST2}/api/v1/orders`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json; charset=UTF-8',
+        Accept: "application/json",
+        "Content-type": "application/json; charset=UTF-8",
       },
       body: JSON.stringify({
         orders: dataInsert,
@@ -304,8 +305,8 @@ class todoList extends Component {
       })
       .then((data) => {
         this.setState({ loadingImport: false });
-        toast('Import Success!', {
-          position: 'top-right',
+        toast("Import Success!", {
+          position: "top-right",
           autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -316,8 +317,8 @@ class todoList extends Component {
         this.getListData();
       })
       .catch((error) => {
-        toast('Import False!', {
-          position: 'top-right',
+        toast("Import False!", {
+          position: "top-right",
           autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -337,13 +338,13 @@ class todoList extends Component {
     }
     console.log(mergeItem);
     fetch(`${HOST2}/api/v1/labels`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json; charset=UTF-8',
+        Accept: "application/json",
+        "Content-type": "application/json; charset=UTF-8",
       },
       body: JSON.stringify({
-        orderNumber: '',
+        orderNumber: "",
         items: mergeItem,
         labelDetails: {},
       }),
@@ -357,7 +358,7 @@ class todoList extends Component {
   };
 
   onFilesError = (error, file) => {
-    alert('error code ' + error.code + ': ' + error.message);
+    alert("error code " + error.code + ": " + error.message);
   };
 
   handleClick = (event) => {
@@ -397,13 +398,13 @@ class todoList extends Component {
 
   handleChangStartDate = (date) => {
     this.setState({
-      startDate: Moment(date).format('YYYY-MM-DD 00:00:00'),
+      startDate: Moment(date).format("YYYY-MM-DD 00:00:00"),
     });
   };
 
   handleChangEndDate = (date) => {
     this.setState({
-      endDate: Moment(date).format('YYYY-MM-DD 23:59:59'),
+      endDate: Moment(date).format("YYYY-MM-DD 23:59:59"),
     });
   };
 
@@ -413,15 +414,77 @@ class todoList extends Component {
     });
   };
 
-  sendMultipleOrder = () => {
-    if(this.state.listCheckBox.length === 0){
-      swal('Warning', 'You do not have any orders', 'warning');
-    }else{
-      console.log(this.state.listData.filter(filter => this.state.listCheckBox.some(some => some === filter.id)));
-    }
-    
+  // name: dataSend.name,
+  //               address1: dataSend.address1,
+  //               address2: dataSend.address2,
+  //               city: dataSend.city,
+  //               state: dataSend.state,
+  //               postalCode: dataSend.postalCode,
+  //               orderNumber: dataSend.orderNumber,
+  //               country: dataSend.country,
+  //               phone: dataSend.phone,
+  //               height: dataSend.height,
+  //               length: dataSend.length,
+  //               weight: dataSend.weight,
+  //               width: dataSend.width,
+  //               is_max: dataSend.is_max,
+  //               items: dataSend.items
 
-  }
+  apiSearchType = async () => {
+    const result = await Axios({
+      method: "GET",
+      url: `${HOST2}/api/v1/typeproducts/search-type`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (result.data.meta.Code === 200) {
+      return result.data.data;
+    }
+    return null;
+  };
+
+  getItemsOrder = async (number_order) => {
+    const result = await Axios({
+      method: "GET",
+      url: `${HOST2}/api/v1/orders/items?order_number=${encodeURIComponent(
+        number_order
+      )}`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (result.data.meta.Code === 200) {
+      return result.data.data.map(map => ({
+          itemDescription: map.itemDescription,
+          packagedQuantity: map.packagedQuantity,
+          skuNumber: map.skuNumber,
+      }));
+    }
+    return null;
+  };
+
+  sendMultipleOrder = async () => {
+    if (this.state.listCheckBox.length === 0) {
+      swal("Warning", "You do not have any orders", "warning");
+    } else {
+      const data = this.state.listData.filter((filter) =>
+        this.state.listCheckBox.some((some) => some === filter.id)
+      );
+      console.log(data);
+      const list_type = await this.apiSearchType();
+      console.log(list_type)
+      for (let [i, items] of data.entries()) {
+        // console.log(`${i}/${data.length}`);
+        const items_order = await this.getItemsOrder(items.orderNumber);
+        if(items_order !== null){
+          items.items = items_order;
+          console.log(items)
+        }
+      }
+      console.log("done");
+    }
+  };
 
   render() {
     const { classes } = this.props;
@@ -447,7 +510,7 @@ class todoList extends Component {
                 value={this.state.startDate}
                 onChange={this.handleChangStartDate}
                 KeyboardButtonProps={{
-                  'aria-label': 'change date',
+                  "aria-label": "change date",
                 }}
                 className="form-control m-input mt-0"
               />
@@ -462,7 +525,7 @@ class todoList extends Component {
                 value={this.state.endDate}
                 onChange={this.handleChangEndDate}
                 KeyboardButtonProps={{
-                  'aria-label': 'change date',
+                  "aria-label": "change date",
                 }}
                 className="form-control m-input mt-0"
               />
@@ -476,7 +539,7 @@ class todoList extends Component {
                   displayEmpty
                   onChange={this.handleChangeStatus}
                   className={classes.selectEmpty}
-                  inputProps={{ 'aria-label': 'Without label' }}
+                  inputProps={{ "aria-label": "Without label" }}
                 >
                   <MenuItem value="">
                     <em>All</em>
@@ -502,7 +565,7 @@ class todoList extends Component {
                   });
                 }}
                 onKeyUp={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     this.setState(
                       {
                         activePage: 1,
@@ -513,7 +576,7 @@ class todoList extends Component {
                     );
                   }
                 }}
-                inputProps={{ 'aria-label': 'description' }}
+                inputProps={{ "aria-label": "description" }}
               />
               <Button
                 variant="contained"
@@ -552,12 +615,12 @@ class todoList extends Component {
               >
                 Export Template
               </Button>
-              <div style={{ display: 'inline-block' }}>
+              <div style={{ display: "inline-block" }}>
                 <Files
                   className="files-dropzone"
                   onChange={this.onChangeFiles}
                   onError={this.onFilesError}
-                  accepts={['.xlsx']}
+                  accepts={[".xlsx"]}
                   multiple={false}
                   // maxFiles={3}
                   minFileSize={0}
@@ -592,7 +655,7 @@ class todoList extends Component {
                 </thead>
                 <tbody>
                   {this.state.crrData.map((value, index) => {
-                    var Status = '';
+                    var Status = "";
                     if (value.status === 0) {
                       Status = (
                         <Chip
@@ -621,39 +684,45 @@ class todoList extends Component {
                     }
                     return (
                       <tr key={index}>
-                        <td style={{ width: 50 }}>{
-                          value.status === 0 &&
-                          <Checkbox
-                            onChange={(e) => {
-                              if(e.target.checked === true){
-                                this.setState({
-                                  listCheckBox: [...this.state.listCheckBox, value.id]
-                                })
-                              }else{
-                                this.setState({
-                                  listCheckBox: this.state.listCheckBox.filter(filter => filter !== value.id)
-                                })
-                              }
-                            }}
-                            value="checkedA"
-                            inputProps={{ 'aria-label': 'Checkbox A' }}
-                          />
-                        }</td>
+                        <td style={{ width: 50 }}>
+                          {value.status === 0 && (
+                            <Checkbox
+                              onChange={(e) => {
+                                if (e.target.checked === true) {
+                                  this.setState({
+                                    listCheckBox: [
+                                      ...this.state.listCheckBox,
+                                      value.id,
+                                    ],
+                                  });
+                                } else {
+                                  this.setState({
+                                    listCheckBox: this.state.listCheckBox.filter(
+                                      (filter) => filter !== value.id
+                                    ),
+                                  });
+                                }
+                              }}
+                              value="checkedA"
+                              inputProps={{ "aria-label": "Checkbox A" }}
+                            />
+                          )}
+                        </td>
                         <td>{index + this.state.offset + 1}</td>
                         <td>{value.orderNumber}</td>
                         <td>{value.name}</td>
                         <td>{value.address1}</td>
                         <td>{value.country}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>
+                        <td style={{ whiteSpace: "nowrap" }}>
                           {value.beginShipping !== undefined &&
-                            Moment(value.beginShipping).format('DD-MM-YYYY')}
+                            Moment(value.beginShipping).format("DD-MM-YYYY")}
                           {value.timeCompleted !== undefined &&
-                            ' -> ' +
-                              Moment(value.timeCompleted).format('DD-MM-YYYY')}
+                            " -> " +
+                              Moment(value.timeCompleted).format("DD-MM-YYYY")}
                         </td>
-                        <td>{Moment(value.created_at).format('DD-MM-YYYY')}</td>
+                        <td>{Moment(value.created_at).format("DD-MM-YYYY")}</td>
                         <td>{Status}</td>
-                        <td width={220} style={{ padding: '0px' }}>
+                        <td width={220} style={{ padding: "0px" }}>
                           <IconButton
                             aria-label="view"
                             color="primary"
@@ -672,11 +741,11 @@ class todoList extends Component {
                               color="primary"
                               onClick={() => {
                                 swal({
-                                  title: 'Are you sure!',
+                                  title: "Are you sure!",
                                   text:
-                                    'Are you sure you want to delay ' +
+                                    "Are you sure you want to delay " +
                                     value.orderNumber,
-                                  icon: 'warning',
+                                  icon: "warning",
                                   buttons: true,
                                 })
                                   .then((name) => {
@@ -684,9 +753,9 @@ class todoList extends Component {
                                     return fetch(
                                       `${HOST2}/api/v1/orders/delay`,
                                       {
-                                        method: 'POST',
+                                        method: "POST",
                                         headers: {
-                                          'Content-Type': 'application/json',
+                                          "Content-Type": "application/json",
                                         },
                                         body: JSON.stringify({
                                           orderNumber: value.orderNumber,
@@ -699,8 +768,8 @@ class todoList extends Component {
                                   })
                                   .then((data) => {
                                     if (data.meta.Code === 200) {
-                                      toast('Delay Success!', {
-                                        position: 'top-right',
+                                      toast("Delay Success!", {
+                                        position: "top-right",
                                         autoClose: 2000,
                                         hideProgressBar: false,
                                         closeOnClick: true,
@@ -713,7 +782,7 @@ class todoList extends Component {
                                   })
                                   .catch((error) => {
                                     if (error) {
-                                      swal('Error', 'error', 'error');
+                                      swal("Error", "error", "error");
                                     } else {
                                       swal.stopLoading();
                                       swal.close();
@@ -724,9 +793,9 @@ class todoList extends Component {
                               <TimerOffIcon />
                             </IconButton>
                           ) : (
-                            ''
+                            ""
                           )}
-                          {value.lableDetails.partnerTrackingNumber === '' &&
+                          {value.lableDetails.partnerTrackingNumber === "" &&
                             value.status !== 3 && (
                               <IconButton
                                 aria-label="send"
@@ -736,7 +805,7 @@ class todoList extends Component {
                                   value.height = 0;
                                   value.width = 0;
                                   value.length = 0;
-                                  value.is_max = 1;
+                                  value.is_max = 0;
                                   value.items = [];
                                   this.setState({
                                     itemData: value,
@@ -749,7 +818,7 @@ class todoList extends Component {
                             )}
                           {value.status === 2 ||
                           value.status === 1 ||
-                          (value.lableDetails.partnerTrackingNumber !== '' &&
+                          (value.lableDetails.partnerTrackingNumber !== "" &&
                             value.status !== 3) ? (
                             <IconButton
                               aria-label="edit"
@@ -764,20 +833,24 @@ class todoList extends Component {
                               <EditIcon />
                             </IconButton>
                           ) : (
-                            ''
+                            ""
                           )}
                           {value.status !== 0 && (
                             <CopyToClipboard
                               text={value.lableDetails.partnerTrackingNumber}
-                              onCopy={() => this.setState({ copied: true }, () => {toast('Copy Success!', {
-                                position: 'top-right',
-                                autoClose: 2000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                                progress: undefined,
-                              });})}
+                              onCopy={() =>
+                                this.setState({ copied: true }, () => {
+                                  toast("Copy Success!", {
+                                    position: "top-right",
+                                    autoClose: 2000,
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: true,
+                                    draggable: true,
+                                    progress: undefined,
+                                  });
+                                })
+                              }
                             >
                               <IconButton aria-label="copy" color="primary">
                                 <FilterNoneIcon />
@@ -790,11 +863,11 @@ class todoList extends Component {
                               color="primary"
                               onClick={() => {
                                 swal({
-                                  title: 'Are you sure!',
+                                  title: "Are you sure!",
                                   text:
-                                    'Are you sure you want to delete ' +
+                                    "Are you sure you want to delete " +
                                     value.orderNumber,
-                                  icon: 'warning',
+                                  icon: "warning",
                                   buttons: true,
                                 })
                                   .then((name) => {
@@ -804,10 +877,10 @@ class todoList extends Component {
                                         value.orderNumber
                                       )}`,
                                       {
-                                        method: 'DELETE',
+                                        method: "DELETE",
                                         headers: {
-                                          'Content-type':
-                                            'application/json; charset=UTF-8',
+                                          "Content-type":
+                                            "application/json; charset=UTF-8",
                                         },
                                       }
                                     );
@@ -817,8 +890,8 @@ class todoList extends Component {
                                   })
                                   .then((data) => {
                                     if (data.meta.Code === 200) {
-                                      toast('Delete Success!', {
-                                        position: 'top-right',
+                                      toast("Delete Success!", {
+                                        position: "top-right",
                                         autoClose: 2000,
                                         hideProgressBar: false,
                                         closeOnClick: true,
@@ -831,7 +904,7 @@ class todoList extends Component {
                                   })
                                   .catch((error) => {
                                     if (error) {
-                                      swal('Error', 'error', 'error');
+                                      swal("Error", "error", "error");
                                     } else {
                                       swal.stopLoading();
                                       swal.close();
@@ -842,8 +915,6 @@ class todoList extends Component {
                               <DeleteForeverIcon />
                             </IconButton>
                           )}
-                          
-                          
                         </td>
                       </tr>
                     );
@@ -872,7 +943,7 @@ class todoList extends Component {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
               >
-                <DialogTitle id="alert-dialog-title">{'Details'}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{"Details"}</DialogTitle>
                 <DialogContent>
                   <DialogContentText id="alert-dialog-description">
                     <div>
@@ -881,7 +952,7 @@ class todoList extends Component {
                         <b>
                           {dataLabelDetail !== null &&
                             dataLabelDetail.trackingNumber}
-                        </b>{' '}
+                        </b>{" "}
                       </span>
                     </div>
                     <div>
@@ -890,7 +961,7 @@ class todoList extends Component {
                         <b>
                           {dataLabelDetail !== null &&
                             dataLabelDetail.partnerTrackingNumber}
-                        </b>{' '}
+                        </b>{" "}
                       </span>
                     </div>
                     <div>

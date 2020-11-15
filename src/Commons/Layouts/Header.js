@@ -57,7 +57,7 @@ export default function Header() {
         [classes.appBarShift]: open,
       })}
     >
-      {/* {!isLogin && <Redirect to={'/login'} />} */}
+      {!isLogin && <Redirect to={'/login'} />}
       <Toolbar>
         <IconButton
           color="inherit"
