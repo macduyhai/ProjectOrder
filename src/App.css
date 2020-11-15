@@ -118,3 +118,17 @@ body{
 .form_link a.active>.MuiButtonBase-root {
   background: #9e9e9e40;
 }
+
+.custom_alert_order{
+  padding-top:50px;
+  padding-bottom: 50px;
+}
+.custom_alert_order .swal2-header h2{
+  font-size: 25px;
+}
+.custom_alert_order .swal2-content{
+  font-size: 18px;
+}
+.custom_alert_order .swal2-actions{
+  flex-direction: column!important;
+}

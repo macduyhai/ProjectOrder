@@ -29,7 +29,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-import { HOST2 } from "../../Config";
+import { HOST, HOST2 } from "../../Config";
 import ModalViewData from "./ModalViewData";
 import { withStyles } from "@material-ui/core/styles";
 
@@ -45,6 +45,7 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import { Checkbox } from "@material-ui/core";
 import Axios from "axios";
 import { time } from "highcharts";
+import Swal from "sweetalert2";
 
 const useStyles = (theme) => ({
   button: {
@@ -118,10 +119,13 @@ class todoList extends Component {
       loadingImport: true,
       copied: false,
       dataLabelDetail: null,
-      startDate: new Date(),
+      // startDate: new Date(),
+      startDate: new Date('2020-11-14'),
       endDate: new Date(),
       status: "",
       listCheckBox: [],
+      access_token: "",
+      client_id: "",
     };
 
     this.itemsPerPage = 10;
@@ -129,6 +133,12 @@ class todoList extends Component {
 
   componentDidMount() {
     this.getListData();
+    let access_token = localStorage.getItem("access_token");
+    let client_id = localStorage.getItem("client_id");
+    this.setState({
+        access_token,
+        client_id
+    });
   }
 
   //GetList
@@ -414,22 +424,6 @@ class todoList extends Component {
     });
   };
 
-  // name: dataSend.name,
-  //               address1: dataSend.address1,
-  //               address2: dataSend.address2,
-  //               city: dataSend.city,
-  //               state: dataSend.state,
-  //               postalCode: dataSend.postalCode,
-  //               orderNumber: dataSend.orderNumber,
-  //               country: dataSend.country,
-  //               phone: dataSend.phone,
-  //               height: dataSend.height,
-  //               length: dataSend.length,
-  //               weight: dataSend.weight,
-  //               width: dataSend.width,
-  //               is_max: dataSend.is_max,
-  //               items: dataSend.items
-
   apiSearchType = async () => {
     const result = await Axios({
       method: "GET",
@@ -464,24 +458,105 @@ class todoList extends Component {
     return null;
   };
 
+  sendItems = async (data) => {
+    const result = await Axios({
+      method: 'POST',
+      url: `${HOST}/v1/label?access_token=${this.state.access_token}&client_id=${this.state.client_id}`,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': ' application/json;charset=UTF-8',
+      },
+      data: JSON.stringify(data),
+    }).catch((error) => {
+      return error.response;
+    });
+    return result;
+}
+
   sendMultipleOrder = async () => {
     if (this.state.listCheckBox.length === 0) {
       swal("Warning", "You do not have any orders", "warning");
     } else {
       const data = this.state.listData.filter((filter) =>
-        this.state.listCheckBox.some((some) => some === filter.id)
-      );
-      console.log(data);
-      const list_type = await this.apiSearchType();
-      console.log(list_type)
-      for (let [i, items] of data.entries()) {
-        // console.log(`${i}/${data.length}`);
-        const items_order = await this.getItemsOrder(items.orderNumber);
-        if(items_order !== null){
-          items.items = items_order;
-          console.log(items)
+      this.state.listCheckBox.some((some) => some === filter.id)
+    );
+      let item_length = 0;
+      await Swal.fire({
+        title: 'IS SENDING THE ORDER',
+        html: '<b></b>',
+        timerProgressBar: true,
+        confirmButtonText: 'View',
+        customClass: 'custom_alert_order',
+        willOpen: async () => {
+          Swal.showLoading()
+         
+          const list_type = await this.apiSearchType();
+          let error = 0;
+          let success = 0;
+          for (let [i, items] of data.entries()) {
+            const items_order = await this.getItemsOrder(items.orderNumber);
+            if(items_order !== null){
+              
+              items.items = items_order;
+              items.weight = 0;
+              items.height = 0;
+              items.width = 0;
+              items.length = 0;
+              items.is_max = 0;
+    
+              for (let x = 0; x < list_type.length; x++) {
+                for (let y = 0; y < items_order.length; y++) {
+                  if(list_type[x].name === items_order[y].skuNumber){
+                    items.weight = parseInt(items.weight) + parseInt(list_type[x].weight * items_order[y].packagedQuantity);
+    
+                    if (items.width < parseInt(list_type[x].width * items_order[y].packagedQuantity)) {
+                      items.width = parseInt(list_type[x].width * items_order[y].packagedQuantity)
+                    }
+                    if (items.height < parseInt(list_type[x].height * items_order[y].packagedQuantity)) {
+                      items.height = parseInt(list_type[x].height * items_order[y].packagedQuantity)
+                    }
+                    if (items.length < parseInt(list_type[x].length * items_order[y].packagedQuantity)) {
+                      items.length = parseInt(list_type[x].length * items_order[y].packagedQuantity)
+                    }
+                  }
+                }
+              }
+              const content = Swal.getContent()
+              if (content) {
+                const b = content.querySelector('b')
+                b.textContent = `Send: ${item_length}/${data.length}, Success: ${success} , Error: ${error}`;
+              }
+              try {
+                const is_send = await this.sendItems(items);
+                if (is_send.data.meta.code === 200) {
+                  success++;
+                } else {
+                  error++;
+                }
+              } catch (error) {
+
+              }
+              if (content) {
+                item_length++;
+                const b = content.querySelector('b')
+                b.textContent = `Send: ${item_length}/${data.length}, Success: ${success} , Error: ${error}`;
+              }
+            }
+          }
+          Swal.hideLoading();
+          this.setState({
+            listCheckBox: [],
+          })
+        },
+        willClose: () => {
+         
         }
-      }
+      }).then((result) => {
+        /* Read more about handling dismissals below */
+        if (result.dismiss === Swal.DismissReason.timer) {
+          console.log('I was closed by the timer')
+        }
+      })
       console.log("done");
     }
   };
@@ -703,7 +778,7 @@ class todoList extends Component {
                                   });
                                 }
                               }}
-                              value="checkedA"
+                              checked={this.state.listCheckBox.some(some => some === value.id)}
                               inputProps={{ "aria-label": "Checkbox A" }}
                             />
                           )}
