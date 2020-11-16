@@ -46,6 +46,7 @@ import { Checkbox } from "@material-ui/core";
 import Axios from "axios";
 import { time } from "highcharts";
 import Swal from "sweetalert2";
+import ModalViewMultiple from "./ModalViewMultiple";
 
 const useStyles = (theme) => ({
   button: {
@@ -126,6 +127,8 @@ class todoList extends Component {
       listCheckBox: [],
       access_token: "",
       client_id: "",
+      showMultiple: false,
+      keyMultiple: "",
     };
 
     this.itemsPerPage = 10;
@@ -399,6 +402,12 @@ class todoList extends Component {
     });
   };
 
+  closeModalViewMultipleOrder = () => {
+    this.setState({
+      showMultiple: false,
+    })
+  }
+
   modalCloseShipping = () => {
     this.setState({
       modalViewShipping: false,
@@ -491,8 +500,18 @@ class todoList extends Component {
           Swal.showLoading()
          
           const list_type = await this.apiSearchType();
+
           let error = 0;
           let success = 0;
+          let data_order = [];
+          let key_order = '';
+          let multiple_order = JSON.parse(localStorage.getItem('multiple_order'));
+
+          if (!multiple_order) {
+            localStorage.setItem('multiple_order',{});
+            multiple_order = {};
+          }
+
           for (let [i, items] of data.entries()) {
             const items_order = await this.getItemsOrder(items.orderNumber);
             if(items_order !== null){
@@ -530,6 +549,8 @@ class todoList extends Component {
                 const is_send = await this.sendItems(items);
                 if (is_send.data.meta.code === 200) {
                   success++;
+                  data_order.push(is_send.data.data);
+                  key_order = items.orderNumber;
                 } else {
                   error++;
                 }
@@ -544,18 +565,26 @@ class todoList extends Component {
             }
           }
           Swal.hideLoading();
+          const key_value_order = {
+            [key_order]: data_order,
+          }
+          const data_mul = Object.assign(multiple_order, key_value_order);
+          localStorage.setItem('multiple_order', JSON.stringify(data_mul))
           this.setState({
             listCheckBox: [],
+            keyMultiple: key_order,
           })
         },
         willClose: () => {
          
         }
       }).then((result) => {
-        /* Read more about handling dismissals below */
-        if (result.dismiss === Swal.DismissReason.timer) {
-          console.log('I was closed by the timer')
+        if(result.isConfirmed){
+          this.setState({
+            showMultiple: true,
+          })
         }
+        
       })
       console.log("done");
     }
@@ -679,7 +708,7 @@ class todoList extends Component {
                 className={classes.button}
                 onClick={() => this.sendMultipleOrder()}
               >
-                <SendIcon /> Send Order
+                <SendIcon /> Send Multiple Order
               </Button>
               <Button
                 variant="contained"
@@ -1064,6 +1093,10 @@ class todoList extends Component {
                 pageRangeDisplayed={5}
                 onChange={this.handlePageChange}
               />
+              {
+                this.state.showMultiple &&
+                <ModalViewMultiple show={this.state.showMultiple} handleClose={this.closeModalViewMultipleOrder} data={this.state.keyMultiple} />
+              }
             </div>
           </div>
         </div>
