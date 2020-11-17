@@ -23,7 +23,7 @@ function ModalViewPrint(props) {
     const [crrData, setCrrData] = useState(null);
 
     let multiple_order = JSON.parse(localStorage.getItem('multiple_order'));
-    const data = Object.entries(multiple_order);
+    const data = Object.entries(multiple_order ? multiple_order : {});
 
     const handleShowModal = (data) => {
         setShowModal(true);
