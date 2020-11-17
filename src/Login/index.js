@@ -68,7 +68,6 @@ export default function SignIn() {
   };
 
   const pushAcessToken = (access_token) => {
-    console.log('1')
     fetch(`${HOST2}/api/v1/authenkey?Key=${access_token}&CreatedAt`, {
       method: 'POST',
       headers: {

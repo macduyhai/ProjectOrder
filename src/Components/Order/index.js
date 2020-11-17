@@ -4,6 +4,7 @@ import Pagination from "react-js-pagination";
 import IconButton from "@material-ui/core/IconButton";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import SendIcon from "@material-ui/icons/Send";
+import PrintIcon from '@material-ui/icons/Print';
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
 import { ToastContainer, toast } from "react-toastify";
@@ -47,6 +48,7 @@ import Axios from "axios";
 import { time } from "highcharts";
 import Swal from "sweetalert2";
 import ModalViewMultiple from "./ModalViewMultiple";
+import ModalViewPrint from "./ModalViewPrint";
 
 const useStyles = (theme) => ({
   button: {
@@ -129,6 +131,7 @@ class todoList extends Component {
       client_id: "",
       showMultiple: false,
       keyMultiple: "",
+      showPrint: false,
     };
 
     this.itemsPerPage = 10;
@@ -407,6 +410,11 @@ class todoList extends Component {
       showMultiple: false,
     })
   }
+  closeModalViewPrint = () => {
+    this.setState({
+      showPrint: false,
+    })
+  }
 
   modalCloseShipping = () => {
     this.setState({
@@ -566,7 +574,10 @@ class todoList extends Component {
           }
           Swal.hideLoading();
           const key_value_order = {
-            [key_order]: data_order,
+            [key_order]: {
+              order_number: data_order,
+              create_date: new Date(),
+            },
           }
           const data_mul = Object.assign(multiple_order, key_value_order);
           localStorage.setItem('multiple_order', JSON.stringify(data_mul))
@@ -590,6 +601,11 @@ class todoList extends Component {
     }
   };
 
+  printListOrder = () => {
+    this.setState({
+      showPrint: true,
+    })
+  }
   render() {
     const { classes } = this.props;
     let { openDialog, dataLabelDetail } = this.state;
@@ -655,7 +671,7 @@ class todoList extends Component {
                 </Select>
               </FormControl>
             </div>
-            <div className="pb-3 col-md-3">
+            <div className="pb-3 col-md-2">
               <Input
                 placeholder="Enter name or order..."
                 className={classes.input}
@@ -701,14 +717,24 @@ class todoList extends Component {
                 Search
               </Button>
             </div>
-            <div className="text-right col-md-4">
+            <div className="text-right col-md-5">
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                startIcon={<PrintIcon />}
+                onClick={() => this.printListOrder()}
+              >
+              Print
+              </Button>
               <Button
                 variant="contained"
                 color="secondary"
                 className={classes.button}
+                startIcon={<SendIcon />}
                 onClick={() => this.sendMultipleOrder()}
               >
-                <SendIcon /> Send Multiple Order
+              Send Multiple Order
               </Button>
               <Button
                 variant="contained"
@@ -1096,6 +1122,10 @@ class todoList extends Component {
               {
                 this.state.showMultiple &&
                 <ModalViewMultiple show={this.state.showMultiple} handleClose={this.closeModalViewMultipleOrder} data={this.state.keyMultiple} />
+              }
+              {
+                this.state.showPrint &&
+                <ModalViewPrint show={this.state.showPrint} handleClose={this.closeModalViewPrint} />
               }
             </div>
           </div>

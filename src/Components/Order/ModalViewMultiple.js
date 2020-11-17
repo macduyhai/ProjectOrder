@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import Button from '@material-ui/core/Button';
+import swal from 'sweetalert';
 
 ModalViewMultiple.propTypes = {
     show: PropTypes.bool,
@@ -26,25 +27,24 @@ function ModalViewMultiple(props) {
 
         localStorage.setItem('multiple_order', JSON.stringify(multiple_order))
         handleClose();
+        swal("Done", "You clicked the button!", "success");
     }
     return (
 
         <Modal show={show} onHide={handleClose}>
             <Modal.Body>
-
+                <ul style={{ listStyle: 'none', padding: 20 }}>
+                    {
+                        crrData.order_number.map((map, i) => (
+                            <li key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: '1px solid #ccc' }}>
+                                <div><strong>trackingNumber: </strong>{map.labelDetails.trackingNumber}</div>
+                                <div><strong>partnerTrackingNumber: </strong>{map.labelDetails.partnerTrackingNumber}</div>
+                                <div><strong>url: </strong><a href={map.labelDetails.url} target="_blank">{map.labelDetails.url}</a></div>
+                            </li>
+                        ))
+                    }
+                </ul>
             </Modal.Body>
-            <ul style={{ listStyle: 'none', padding: 20 }}>
-                {
-                    crrData.map((map, i) => (
-                        <li key={i} style={{marginBottom: 10}}>
-                            <div><strong>trackingNumber: </strong>{map.labelDetails.trackingNumber}</div>
-                            <div><strong>partnerTrackingNumber: </strong>{map.labelDetails.partnerTrackingNumber}</div>
-                            <div><strong>url: </strong><a href={map.labelDetails.url} target="_blank">{map.labelDetails.url}</a></div>
-                        </li>
-                    ))
-                }
-            </ul>
-              
             <Modal.Footer>
                 <Button variant="contained" color="primary" onClick={handlePrint}>
                     Print

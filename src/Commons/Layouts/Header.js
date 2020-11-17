@@ -48,7 +48,8 @@ export default function Header() {
     setAnchorEl(null);
   };
   const handleLogout = () => {
-    setIsLogin(false)
+    setIsLogin(false);
+    localStorage.clear();
   };
   return (
     <AppBar
