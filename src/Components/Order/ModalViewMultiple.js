@@ -30,16 +30,16 @@ function ModalViewMultiple(props) {
         swal("Done", "You clicked the button!", "success");
     }
     return (
-
         <Modal show={show} onHide={handleClose}>
             <Modal.Body>
                 <ul style={{ listStyle: 'none', padding: 20 }}>
                     {
                         crrData.order_number.map((map, i) => (
                             <li key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: '1px solid #ccc' }}>
-                                <div><strong>trackingNumber: </strong>{map.labelDetails.trackingNumber}</div>
-                                <div><strong>partnerTrackingNumber: </strong>{map.labelDetails.partnerTrackingNumber}</div>
-                                <div><strong>url: </strong><a href={map.labelDetails.url} target="_blank">{map.labelDetails.url}</a></div>
+                                <div><strong>numberOrder: </strong>{map.name}</div>
+                                <div><strong>trackingNumber: </strong>{map.data.labelDetails.trackingNumber}</div>
+                                <div><strong>partnerTrackingNumber: </strong>{map.data.labelDetails.partnerTrackingNumber}</div>
+                                <div><strong>url: </strong><a href={map.data.labelDetails.url} target="_blank">{map.data.labelDetails.url}</a></div>
                             </li>
                         ))
                     }

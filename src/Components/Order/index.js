@@ -122,8 +122,8 @@ class todoList extends Component {
       loadingImport: true,
       copied: false,
       dataLabelDetail: null,
-      // startDate: new Date(),
-      startDate: new Date('2020-11-14'),
+      startDate: new Date(),
+      // startDate: new Date('2020-11-14'),
       endDate: new Date(),
       status: "",
       listCheckBox: [],
@@ -489,6 +489,34 @@ class todoList extends Component {
     });
     return result;
 }
+  insertLabelDetail = async (data) => {
+    const result = await Axios({
+      method: 'POST',
+      url: `${HOST2}/api/v1/labels`,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': ' application/json;charset=UTF-8',
+      },
+      data: JSON.stringify(data),
+    });
+   
+    return result.data.meta;
+  };
+
+  //Insert Shipping
+  insertShipping = async (data) => {
+    const result = await Axios({
+      method: 'POST',
+      url: `${HOST2}/api/v1/orders/shipping-time`,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': ' application/json;charset=UTF-8',
+      },
+      data: JSON.stringify(data),
+    });
+   
+    return result.data.meta;
+  };
 
   sendMultipleOrder = async () => {
     if (this.state.listCheckBox.length === 0) {
@@ -556,8 +584,36 @@ class todoList extends Component {
               try {
                 const is_send = await this.sendItems(items);
                 if (is_send.data.meta.code === 200) {
+                  const item = items_order.map(map => ({
+                    itemDescription: map.itemDescription,
+                    packagedQuantity: map.packagedQuantity,
+                    skuNumber: map.skuNumber,
+                  }));
+                  const beginShipping = Moment(new Date()).format("YYYY-MM-DD 00:00:00")
+                  const dayAdd = 10
+                  const fromDay = new Date();
+                  const toDay = new Date(Moment(fromDay, "DD-MM-YYYY").add(dayAdd, 'days'));
+                  const lengthWeekend = Moment(fromDay).isoWeekdayCalc(toDay, [6]);
+                  const timeCompleted = Moment(new Date(Moment(fromDay, "DD-MM-YYYY").add(parseInt(dayAdd - 1) + parseInt(lengthWeekend * 2), 'days'))).format('YYYY-MM-DD 23:59:59');
+
+
+                  const data_label = {
+                    labelDetails: is_send.data.data.labelDetails,
+                    items: item,
+                    orderNumber: items.orderNumber,
+                  }
+                  const data_shipping = {
+                    orderNumber: items.orderNumber,
+                    beginShipping: beginShipping,
+                    timeCompleted: timeCompleted,
+                  }
+                  this.insertLabelDetail(data_label);
+                  this.insertShipping(data_shipping);
                   success++;
-                  data_order.push(is_send.data.data);
+                  data_order.push({
+                    data: is_send.data.data,
+                    name: items.orderNumber,
+                  });
                   key_order = items.orderNumber;
                 } else {
                   error++;
@@ -597,7 +653,7 @@ class todoList extends Component {
         }
         
       })
-      console.log("done");
+      this.getListData();
     }
   };
 
