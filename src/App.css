@@ -132,3 +132,8 @@ body{
 .custom_alert_order .swal2-actions{
   flex-direction: column!important;
 }
+
+.modal_view{
+  display: flex;
+  justify-content: space-between;
+}

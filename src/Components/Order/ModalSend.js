@@ -424,30 +424,8 @@ class ModalSend extends Component {
                 <Modal.Header closeButton className="p-4">
                     <Modal.Title id="contained-modal-title-vcenter" className="h5">
                         Order Number: <b>{dataSend !== null && dataSend.orderNumber}</b>
-                        {/* <span className="pl-5 pr-2" style={{'fontSize': '0.8em'}}>Select Type Product:</span> */}
                     </Modal.Title>
-                    {/* <div>
-                    <FormControl className={classes.formControl}>
-                        <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={this.state.valueType}
-                        displayEmpty
-                        onChange={this.handleChangeType}
-                        className={classes.selectEmpty}
-                        inputProps={{ 'aria-label': 'Without label' }}
-                        >
-                        <MenuItem value={null}><em>Select</em></MenuItem>
-                        {
-                            listDataType.map((value,index) => {
-                                return(
-                                    <MenuItem key={index} value={value}>{value.name}</MenuItem>
-                                )
-                            })
-                        }
-                        </Select>
-                    </FormControl>
-                    </div> */}
+
                 </Modal.Header>
                 <Modal.Body>
                     <form id="formAddGroup">
