@@ -157,7 +157,7 @@ function ModalViewPrint(props) {
                                 <th style={{ width: 50 }}>
                                     <Checkbox checked={checkAll} color='primary' onChange={(e) => handleCheckBoxAll(e)}></Checkbox>
                                 </th>
-                                <th style={{ verticalAlign: 'middle', width: 50 }}>STT</th>
+                                <th style={{ verticalAlign: 'middle', textAlign: 'center', width: 50 }}>STT</th>
                                 <th style={{ verticalAlign: 'middle' }}>Order Number</th>
                                 <th style={{ verticalAlign: 'middle' }}>Name</th>
                                 <th style={{ verticalAlign: 'middle' }}>Created Time</th>
@@ -170,10 +170,10 @@ function ModalViewPrint(props) {
                                         <td>
                                             <Checkbox checked={checkBox.some(some => some === i)} onChange={(e) => handleCheckBox(e, i)}></Checkbox>
                                         </td>
-                                        <td style={{ verticalAlign: 'middle', width: 50 }}>{i + 1}</td>
-                                        <td style={{ verticalAlign: 'middle', width: 50 }}>{map.orderNumber}</td>
-                                        <td style={{ verticalAlign: 'middle', width: 50 }}>{map.name}</td>
-                                        <td style={{ verticalAlign: 'middle', width: 50 }}>{moment(map.created_at).format('DD-MM-YYYY')}</td>
+                                        <td style={{ verticalAlign: 'middle', textAlign: 'center'}}>{i + 1}</td>
+                                        <td style={{ verticalAlign: 'middle'}}>{map.orderNumber}</td>
+                                        <td style={{ verticalAlign: 'middle'}}>{map.name}</td>
+                                        <td style={{ verticalAlign: 'middle'}}>{moment(map.created_at).format('DD-MM-YYYY')}</td>
                                     </tr>
                                 ))
                             }
