@@ -120,7 +120,7 @@ class todoList extends Component {
       loadingImport: true,
       copied: false,
       dataLabelDetail: null,
-      startDate: Moment(new Date()).startOf('month'),
+      startDate: Moment(new Date().getTime() - new Date(new Date().getFullYear(), new Date().getMonth(), 0).getDate() * 86400000).format('YYYY-MM-DD'),
       endDate: new Date(),
       status: "",
       listCheckBox: [],
