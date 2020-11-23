@@ -232,6 +232,7 @@ class todoList extends Component {
       /* Update state */
       this.setState({ listData: data, cols: make_cols(ws["!ref"]) }, () => {
         let { listData } = this.state;
+        console.log(listData)
         if (listData.length === 0) return;
         listData[0].items = [
           {
@@ -300,6 +301,27 @@ class todoList extends Component {
 
   //Insert
   insertData = (dataInsert) => {
+    var dataPush = []
+    for (let index = 0; index < dataInsert.length; index++) {
+      dataPush.push({
+        orderNumber: dataInsert[index].orderNumber !== undefined ? dataInsert[index].orderNumber : '',
+        name: dataInsert[index].name !== undefined ? dataInsert[index].name : '',
+        item: dataInsert[index].item !== undefined ? dataInsert[index].item : '',
+        quantity: dataInsert[index].quantity !== undefined ? dataInsert[index].quantity : '',
+        address1: dataInsert[index].address1 !== undefined ? dataInsert[index].address1 : '',
+        address2: dataInsert[index].address2 !== undefined ? dataInsert[index].address2 : '',
+        city: dataInsert[index].city !== undefined ? dataInsert[index].city : '',
+        state: dataInsert[index].state !== undefined ? dataInsert[index].state : '',
+        postalCode: dataInsert[index].postalCode !== undefined ? dataInsert[index].postalCode : '',
+        country: dataInsert[index].country !== undefined ? dataInsert[index].country : '',
+        phone: dataInsert[index].phone !== undefined ? dataInsert[index].phone + '' : '',
+        branchsell: dataInsert[index].branchsell !== undefined ? dataInsert[index].branchsell : '',
+        typeproduct: dataInsert[index].typeproduct !== undefined ? dataInsert[index].typeproduct : '',
+        seller: dataInsert[index].seller !== undefined ? dataInsert[index].seller : '',
+        note: dataInsert[index].note !== undefined ? dataInsert[index].note : '',
+        printstatus: 0
+      })
+    }
     this.setState({ loadingImport: true });
     fetch(`${HOST2}/api/v1/orders`, {
       method: "POST",
@@ -308,36 +330,51 @@ class todoList extends Component {
         "Content-type": "application/json; charset=UTF-8",
       },
       body: JSON.stringify({
-        orders: dataInsert,
+        orders: dataPush,
       }),
     })
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        this.setState({ loadingImport: false });
-        toast("Import Success!", {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        this.getListData();
+        if (data.meta.Code === 200) {
+          this.setState({ loadingImport: false });
+          toast("Import Success!", {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          this.getListData();
+        } else {
+          toast("Import False!", {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          this.setState({ loadingImport: false });
+        }
       })
       .catch((error) => {
-        toast("Import False!", {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        this.setState({ loadingImport: false });
+        if (error) {
+          toast("Import False!", {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          this.setState({ loadingImport: false });
+        }
       });
   };
 
@@ -478,8 +515,10 @@ class todoList extends Component {
       return error.response;
     });
     return result;
-}
-  insertLabelDetail = async (data) => {
+  }
+
+  //Insert Label Multi
+  insertLabelDetailMulti = async (data) => {
     const result = await Axios({
       method: 'POST',
       url: `${HOST2}/api/v1/labels`,
@@ -598,7 +637,7 @@ class todoList extends Component {
                     beginShipping: beginShipping,
                     timeCompleted: timeCompleted,
                   }
-                  this.insertLabelDetail(data_label);
+                  this.insertLabelDetailMulti(data_label);
                   this.insertShipping(data_shipping);
                   success++;
                   data_order.push({
