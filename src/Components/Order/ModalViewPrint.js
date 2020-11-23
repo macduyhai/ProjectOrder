@@ -49,7 +49,7 @@ function ModalViewPrint(props) {
         let listImage = [];
         data.forEach(value => {
             orderNumber.push(value.orderNumber);
-            listImage.push(value.lableDetails.url);
+            listImage.push(value);
         });
         const dataPost = {
             orderNumber: orderNumber,
