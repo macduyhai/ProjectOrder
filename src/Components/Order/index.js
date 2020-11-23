@@ -272,7 +272,6 @@ class todoList extends Component {
             index--;
           }
         }
-        console.log(this.state.listData);
         this.setState(
           {
             listData,
@@ -348,7 +347,6 @@ class todoList extends Component {
     for (let index = 0; index < dataInsert.length; index++) {
       mergeItem = mergeItem.concat(dataInsert[index].items);
     }
-    console.log(mergeItem);
     fetch(`${HOST2}/api/v1/labels`, {
       method: "POST",
       headers: {
@@ -590,18 +588,18 @@ class todoList extends Component {
                   const timeCompleted = Moment(new Date(Moment(fromDay, "DD-MM-YYYY").add(parseInt(dayAdd - 1) + parseInt(lengthWeekend * 2), 'days'))).format('YYYY-MM-DD 23:59:59');
 
 
-                  // const data_label = {
-                  //   labelDetails: is_send.data.data.labelDetails,
-                  //   items: item,
-                  //   orderNumber: items.orderNumber,
-                  // }
-                  // const data_shipping = {
-                  //   orderNumber: items.orderNumber,
-                  //   beginShipping: beginShipping,
-                  //   timeCompleted: timeCompleted,
-                  // }
-                  // this.insertLabelDetail(data_label);
-                  // this.insertShipping(data_shipping);
+                  const data_label = {
+                    labelDetails: is_send.data.data.labelDetails,
+                    items: item,
+                    orderNumber: items.orderNumber,
+                  }
+                  const data_shipping = {
+                    orderNumber: items.orderNumber,
+                    beginShipping: beginShipping,
+                    timeCompleted: timeCompleted,
+                  }
+                  this.insertLabelDetail(data_label);
+                  this.insertShipping(data_shipping);
                   success++;
                   data_order.push({
                     data: is_send.data.data,

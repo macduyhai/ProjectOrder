@@ -6,7 +6,9 @@ import { Modal } from 'react-bootstrap';
 import swal from 'sweetalert';
 import { HOST2 } from '../../Config';
 import Axios from 'axios';
+import ReactToPrint, { useReactToPrint } from "react-to-print";
 import { Autocomplete } from '@material-ui/lab';
+import ComponentToPrint from './ComponentToPrint';
 
 ModalViewPrint.propTypes = {
     show: PropTypes.bool,
@@ -27,8 +29,11 @@ ModalViewPrint.defaultProps = {
 function ModalViewPrint(props) {
     const { show, handleClose, data, start_date, end_date } = props;
 
+    const componentRef = useRef();
+
     const [crrData, setCrrData] = useState([]);
     const [checkAll, setCheckALl] = useState(true);
+    const [dataImage, setDataImage] = useState([]);
 
     const [checkBox, setCheckBox] = useState([]);
 
@@ -38,25 +43,30 @@ function ModalViewPrint(props) {
 
     const typingTimeoutRef = useRef(null);
 
-    const handlePrint = () => {
+    const handlePrint = async () => {
         const data = crrData.filter((filter, i) => checkBox.some(some => some === i)).concat(valueSelect);
-        let orderNumber = []
+        let orderNumber = [];
+        let listImage = [];
         data.forEach(value => {
             orderNumber.push(value.orderNumber);
+            listImage.push(value.lableDetails.url);
         });
-
         const dataPost = {
             orderNumber: orderNumber,
             printstatus: 1,
         }
-        const status = printsOrderApi(dataPost);
+        setDataImage(listImage);
+        const status = await printsOrderApi(dataPost);
         if (status === 200) {
-            swal('Done', 'You clicked the button!', 'success');
+            printData();
             handleClose();
         } else {
             swal('Error', '', 'error');
         }
     };
+    const printData = useReactToPrint({
+        content: () => componentRef.current,
+    })
 
     const handleChangeSelect = async (e) => {
         const value = e.target.value;
@@ -68,7 +78,7 @@ function ModalViewPrint(props) {
         typingTimeoutRef.current = setTimeout(async () => {
             if (value) {
                 const data = await getListDataPrint(value);
-                if(data.length > 0){
+                if (data.length > 0) {
                     const option = data.map(map => ({
                         ...map,
                         title: map.orderNumber,
@@ -102,7 +112,7 @@ function ModalViewPrint(props) {
 
     const printsOrderApi = async (data) => {
         const result = await Axios({
-            method: 'POST',
+            method: 'PUT',
             url: `${HOST2}/api/v1/orders/prints`,
             headers: {
                 'Accept': 'application/json',
@@ -110,7 +120,7 @@ function ModalViewPrint(props) {
             },
             data: JSON.stringify(data),
         });
-        return result.data.meta;
+        return result.data.meta.Code;
     }
 
     const fetchDataCheckBox = (data) => {
@@ -170,16 +180,17 @@ function ModalViewPrint(props) {
                                         <td>
                                             <Checkbox checked={checkBox.some(some => some === i)} onChange={(e) => handleCheckBox(e, i)}></Checkbox>
                                         </td>
-                                        <td style={{ verticalAlign: 'middle', textAlign: 'center'}}>{i + 1}</td>
-                                        <td style={{ verticalAlign: 'middle'}}>{map.orderNumber}</td>
-                                        <td style={{ verticalAlign: 'middle'}}>{map.name}</td>
-                                        <td style={{ verticalAlign: 'middle'}}>{moment(map.created_at).format('DD-MM-YYYY')}</td>
+                                        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>{i + 1}</td>
+                                        <td style={{ verticalAlign: 'middle' }}>{map.orderNumber}</td>
+                                        <td style={{ verticalAlign: 'middle' }}>{map.name}</td>
+                                        <td style={{ verticalAlign: 'middle' }}>{moment(map.created_at).format('DD-MM-YYYY')}</td>
                                     </tr>
                                 ))
                             }
                         </tbody>
                     </table>
                 </div>
+                <ComponentToPrint ref={componentRef} data={dataImage} />
             </Modal.Body>
             <Modal.Footer className='modal_view'>
                 <Autocomplete
