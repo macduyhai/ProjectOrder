@@ -279,7 +279,6 @@ class todoList extends Component {
           },
           () => {
             this.insertData(this.state.listData);
-            this.insertLabelDetail(this.state.listData);
           }
         );
       });
@@ -349,6 +348,7 @@ class todoList extends Component {
             progress: undefined,
           });
           this.getListData();
+          this.insertLabelDetail(this.state.listData);
         } else {
           toast("Import False!", {
             position: "top-right",
