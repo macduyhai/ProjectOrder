@@ -150,7 +150,7 @@ class todoList extends Component {
   getListData = () => {
     fetch(
       `${HOST2}/api/v1/orders/search?order_number=${encodeURIComponent(
-        'TEST01'
+        this.state.valueSearch
       )}&begin_time=${encodeURIComponent(
         Moment(this.state.startDate).format("YYYY-MM-DD 00:00:00")
       )}&end_time=${encodeURIComponent(
