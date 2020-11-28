@@ -42,6 +42,7 @@ import { make_cols } from "./MakeColumms";
 //Modal
 import ModalSend from "./ModalSend";
 import ModalViewData from "./ModalViewData";
+import ModalViewError from "./ModalViewError";
 import ModalViewPrint from "./ModalViewPrint";
 
 
@@ -128,6 +129,8 @@ class todoList extends Component {
       client_id: "",
       showPrint: false,
       dataPrint: [],
+      modalViewError: false,
+      listErrorOrder: [],
     };
 
     this.itemsPerPage = 10;
@@ -147,7 +150,7 @@ class todoList extends Component {
   getListData = () => {
     fetch(
       `${HOST2}/api/v1/orders/search?order_number=${encodeURIComponent(
-        this.state.valueSearch
+        'TEST01'
       )}&begin_time=${encodeURIComponent(
         Moment(this.state.startDate).format("YYYY-MM-DD 00:00:00")
       )}&end_time=${encodeURIComponent(
@@ -443,6 +446,13 @@ class todoList extends Component {
     })
   }
 
+  closeModalError = () => {
+    this.setState({
+      listErrorOrder: [],
+      modalViewError: false,
+    })
+  }
+
   modalCloseShipping = () => {
     this.setState({
       modalViewShipping: false,
@@ -560,7 +570,7 @@ class todoList extends Component {
         title: 'IS SENDING THE ORDER',
         html: '<b></b>',
         timerProgressBar: true,
-        confirmButtonText: 'Done',
+        confirmButtonText: 'View Error',
         customClass: 'custom_alert_order',
         willOpen: async () => {
           Swal.showLoading()
@@ -571,6 +581,7 @@ class todoList extends Component {
           let success = 0;
           let data_order = [];
           let key_order = '';
+          let array_error = [];
           let multiple_order = JSON.parse(localStorage.getItem('multiple_order'));
 
           if (!multiple_order) {
@@ -645,7 +656,19 @@ class todoList extends Component {
                     name: items.orderNumber,
                   });
                   key_order = items.orderNumber;
-                } else {
+                } else if(is_send.data.meta.code === 400) {
+                  array_error.push({
+                    orderNumber: items.orderNumber,
+                    name: items.name,
+                    message: is_send.data.error.errorMessage,
+                  })
+                  error++;
+                } else{
+                  array_error.push({
+                    orderNumber: items.orderNumber,
+                    name: items.name,
+                    message: '',
+                  })
                   error++;
                 }
               } catch (error) {
@@ -670,17 +693,18 @@ class todoList extends Component {
           this.setState({
             listCheckBox: [],
             keyMultiple: key_order,
+            listErrorOrder: array_error,
           })
         },
         willClose: () => {
          
         }
       }).then((result) => {
-        // if(result.isConfirmed){
-        //   this.setState({
-        //     showMultiple: true,
-        //   })
-        // }
+        if(result.isConfirmed){
+          this.setState({
+            modalViewError: true,
+          })
+        }
         
       })
       this.getListData();
@@ -1231,6 +1255,10 @@ class todoList extends Component {
               {
                 this.state.showPrint &&
                 <ModalViewPrint data={this.state.dataPrint} show={this.state.showPrint} start_date={this.state.startDate} end_date={this.state.endDate} handleClose={this.closeModalViewPrint} />
+              }
+              {
+                this.state.modalViewError &&
+                <ModalViewError show={this.state.modalViewError} data={this.state.listErrorOrder} handleClose={this.closeModalError} />
               }
             </div>
           </div>
