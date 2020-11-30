@@ -93,7 +93,8 @@ export default function Menubar() {
           {path: 'order_management', name: 'Orders', image: 'order.svg'},
           {path: 'branch_sell', name: 'Branch Sells', image: 'share.svg'},
           {path: 'type_product', name: 'Type Products', image: 'product.svg'},
-          {path: 'seller', name: 'Sellers', image: 'seller.svg'}
+          {path: 'seller', name: 'Sellers', image: 'seller.svg'},
+          {path: 'checking', name: 'Checking', image: 'checking.svg'}
         ].map((value, index) => (
           <NavLink to={`/${value.path}`} key={index}>
             <ListItem button key={value.path}>

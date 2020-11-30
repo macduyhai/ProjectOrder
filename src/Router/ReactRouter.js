@@ -12,6 +12,7 @@ import BranchSell from '../Components/BranchSell';
 import TypeProduct from '../Components/TypeProduct';
 import Seller from '../Components/Seller';
 import DashBoard from '../Components/DashBoard';
+import Checking from '../Components/Checking';
 function ReactRouter() {
   const classes = useStyles();
 
@@ -28,6 +29,7 @@ function ReactRouter() {
         <Route path="/branch_sell" component={BranchSell} />
         <Route path="/type_product" component={TypeProduct} />
         <Route path="/seller" component={Seller} />
+        <Route path="/checking" component={Checking} />
       </main>
     </div>
   );
