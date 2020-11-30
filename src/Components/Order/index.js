@@ -125,6 +125,7 @@ class todoList extends Component {
       endDate: new Date(),
       status: "",
       listCheckBox: [],
+      checkALl: [],
       access_token: "",
       client_id: "",
       showPrint: false,
@@ -904,16 +905,49 @@ class todoList extends Component {
               <Table bordered hover>
                 <thead>
                   <tr>
-                    <th></th>
-                    <th>STT</th>
-                    <th>Order Number</th>
-                    <th>Name</th>
-                    <th>Address 1</th>
-                    <th>Country</th>
-                    <th>Shipping Time</th>
-                    <th>Created Time</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th>
+                      <Checkbox
+                        onChange={(e) => {
+                          let list_check_box = [];
+                          const list_data = this.state.crrData.filter(filter => filter.status === 0);
+                          list_data.forEach(value => {
+                            list_check_box.push(value.id);
+                          })
+                          if (e.target.checked === true) {
+                            const list = this.state.listCheckBox.concat(list_check_box);
+                            const new_list = list.filter((filter, index) => list.indexOf(filter) === index);
+                            this.setState({
+                              checkALl: [...this.state.checkALl, this.state.activePage],
+                              listCheckBox: new_list,
+                            });
+                          } else {
+                            let list = [...this.state.listCheckBox];
+                            list_check_box.forEach((value_1) => {
+                              list.forEach((value_2, index) => {
+                                if(value_1 === value_2){
+                                  list.splice(index, 1)
+                                }
+                              })
+                            }) 
+                            this.setState({
+                              checkALl: this.state.checkALl.filter(filter => filter !== this.state.activePage),
+                              listCheckBox: list,
+                            })
+                          }
+                        }}
+                        checked={this.state.checkALl.some(some => some === this.state.activePage)}
+                        inputProps={{ "aria-label": "Checkbox A" }}
+                      />
+                    </th>
+                    <th style={{verticalAlign: 'middle'}}>STT</th>
+                    <th style={{verticalAlign: 'middle'}}>Order Number</th>
+                    <th style={{verticalAlign: 'middle'}}>Name</th>
+                    <th style={{verticalAlign: 'middle'}}>Address 1</th>
+                    <th style={{verticalAlign: 'middle'}}>Country</th>
+                    <th style={{verticalAlign: 'middle'}}>Shipping Time</th>
+                    <th style={{verticalAlign: 'middle'}}>Created Time</th>
+                    <th style={{verticalAlign: 'middle'}}>Status</th>
+                    <th style={{verticalAlign: 'middle'}}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
