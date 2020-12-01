@@ -624,54 +624,64 @@ class todoList extends Component {
                 b.textContent = `Send: ${item_length}/${data.length}, Success: ${success} , Error: ${error}`;
               }
               try {
-                const is_send = await this.sendItems(items);
-                if (is_send.data.meta.code === 200) {
-                  const item = items_order.map(map => ({
-                    itemDescription: map.itemDescription,
-                    packagedQuantity: map.packagedQuantity,
-                    skuNumber: map.skuNumber,
-                  }));
-                  const beginShipping = Moment(new Date()).format("YYYY-MM-DD 00:00:00")
-                  const dayAdd = 10
-                  const fromDay = new Date();
-                  const toDay = new Date(Moment(fromDay, "DD-MM-YYYY").add(dayAdd, 'days'));
-                  const lengthWeekend = Moment(fromDay).isoWeekdayCalc(toDay, [6]);
-                  const timeCompleted = Moment(new Date(Moment(fromDay, "DD-MM-YYYY").add(parseInt(dayAdd - 1) + parseInt(lengthWeekend * 2), 'days'))).format('YYYY-MM-DD 23:59:59');
-
-
-                  const data_label = {
-                    labelDetails: is_send.data.data.labelDetails,
-                    items: item,
-                    orderNumber: items.orderNumber,
-                  }
-                  const data_shipping = {
-                    orderNumber: items.orderNumber,
-                    beginShipping: beginShipping,
-                    timeCompleted: timeCompleted,
-                  }
-                  this.insertLabelDetailMulti(data_label);
-                  this.insertShipping(data_shipping);
-                  success++;
-                  data_order.push({
-                    data: is_send.data.data,
-                    name: items.orderNumber,
-                  });
-                  key_order = items.orderNumber;
-                } else if(is_send.data.meta.code === 400) {
+                if(items.weight === 0 || items.height === 0 || items.width === 0 || items.length === 0){
                   array_error.push({
                     orderNumber: items.orderNumber,
                     name: items.name,
-                    message: is_send.data.error.errorMessage,
+                    message: 'Check items',
                   })
                   error++;
-                } else{
-                  array_error.push({
-                    orderNumber: items.orderNumber,
-                    name: items.name,
-                    message: '',
-                  })
-                  error++;
+                }else{
+                  const is_send = await this.sendItems(items);
+                  if (is_send.data.meta.code === 200) {
+                    const item = items_order.map(map => ({
+                      itemDescription: map.itemDescription,
+                      packagedQuantity: map.packagedQuantity,
+                      skuNumber: map.skuNumber,
+                    }));
+                    const beginShipping = Moment(new Date()).format("YYYY-MM-DD 00:00:00")
+                    const dayAdd = 10
+                    const fromDay = new Date();
+                    const toDay = new Date(Moment(fromDay, "DD-MM-YYYY").add(dayAdd, 'days'));
+                    const lengthWeekend = Moment(fromDay).isoWeekdayCalc(toDay, [6]);
+                    const timeCompleted = Moment(new Date(Moment(fromDay, "DD-MM-YYYY").add(parseInt(dayAdd - 1) + parseInt(lengthWeekend * 2), 'days'))).format('YYYY-MM-DD 23:59:59');
+  
+  
+                    const data_label = {
+                      labelDetails: is_send.data.data.labelDetails,
+                      items: item,
+                      orderNumber: items.orderNumber,
+                    }
+                    const data_shipping = {
+                      orderNumber: items.orderNumber,
+                      beginShipping: beginShipping,
+                      timeCompleted: timeCompleted,
+                    }
+                    this.insertLabelDetailMulti(data_label);
+                    this.insertShipping(data_shipping);
+                    success++;
+                    data_order.push({
+                      data: is_send.data.data,
+                      name: items.orderNumber,
+                    });
+                    key_order = items.orderNumber;
+                  } else if(is_send.data.meta.code === 400) {
+                    array_error.push({
+                      orderNumber: items.orderNumber,
+                      name: items.name,
+                      message: is_send.data.error.errorMessage,
+                    })
+                    error++;
+                  } else{
+                    array_error.push({
+                      orderNumber: items.orderNumber,
+                      name: items.name,
+                      message: '',
+                    })
+                    error++;
+                  }
                 }
+                
               } catch (error) {
 
               }
