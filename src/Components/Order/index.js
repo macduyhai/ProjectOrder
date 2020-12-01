@@ -703,6 +703,7 @@ class todoList extends Component {
           localStorage.setItem('multiple_order', JSON.stringify(data_mul))
           this.setState({
             listCheckBox: [],
+            checkALl: [],
             keyMultiple: key_order,
             listErrorOrder: array_error,
           })
