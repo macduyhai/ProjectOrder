@@ -8,6 +8,8 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from '@material-ui/core/styles';
 import { HOST2 } from '../../Config';
+import { Input } from '@material-ui/core';
+import Axios from 'axios';
 
 const useStyles = (theme) => ({
   backdrop: {
@@ -23,64 +25,77 @@ class ModalViewChecking extends Component {
       dataView: null,
       loadingNote: false,
       listItem: [],
+      valueInput: '',
     };
   }
-
-  getListItem = () => {
-    var { dataView, listItem } = this.state;
-    fetch(
-      `${HOST2}/api/v1/orders/items?order_number=${encodeURIComponent(
-        dataView.orderNumber
-      )}`,
-      {
-        method: 'GET',
-      }
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.meta.Code === 200) {
-          this.setState({
-            listItem: data.data,
-          });
-        }
-      })
-      .catch((error) => {
-        console.log('error');
-      });
-  };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.show === true) {
       //dataView
-      this.setState(
-        {
+      this.setState({
           dataView: nextProps.data,
+        });
+    }
+  }
+  getData = async (data) => {
+    const result = await Axios({
+      method: 'GET',
+      url: `${HOST2}/api/v1/orders/check?partner_tracking_number=${data}`,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': ' application/json;charset=UTF-8',
+      },
+    });
+    if(result.data.meta.Code === 200){
+      return result.data.data;
+    }else{
+      return null;
+    }
+  }
+  handleOnChange = (e) => {
+    this.setState({
+      valueInput: e.target.value
+    }, () => {
+
+    })
+  }
+
+  handleEnter = async (e) => {
+    if(e.key === 'Enter'){
+      const data = await this.getData(e.target.value);
+      this.setState({
+        dataView: {
+          ...data[0].Order,
+          lableDetails: data[0].lableDetails,
+          items: data[0].items,
         },
-        () => {
-          this.getListItem();
-        }
-      );
+      },() => {
+        this.props.pushData({
+          ...this.state.dataView,
+        })
+      })
     }
   }
 
   render() {
-    const { classes } = this.props;
-    let { dataView, listItem } = this.state;
-    let click_handle = (event) => {
-      this.updateNote(dataView, event);
-    };
+    const { classes, show, onHide } = this.props;
+    const { dataView } = this.state;
     return (
       <Modal
-        {...this.props}
+        show={show}
         size="xl"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        onHide={onHide}
       >
         <Modal.Header closeButton className="p-4">
-          <Modal.Title id="contained-modal-title-vcenter" className="h5">
-            Order Number: <b>{dataView !== null && dataView.orderNumber}</b>
+          <Modal.Title id="contained-modal-title-vcenter" className="h5" style={{width: '90%'}}>
+            <div className='d-flex justify-content-between'>
+              <span>
+                Order Number: <b>{dataView !== null && dataView.orderNumber}</b>
+              </span>
+              <input style={{width: 300}} onKeyDown={(e) => this.handleEnter(e)} onChange={(e) => this.handleOnChange(e)} className='form-control' placeholder='Partner TrackingNumber...' value={this.state.valueInput}/>
+            </div>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -121,7 +136,7 @@ class ModalViewChecking extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {listItem.map((value, index) => {
+                  {(dataView !== null && dataView.items) && dataView.items.map((value, index) => {
                     return (
                       <tr>
                         <td>{value.skuNumber}</td>
@@ -203,6 +218,13 @@ ModalViewChecking.propTypes = {
   data: PropTypes.object,
   onHide: PropTypes.func.isRequired,
   show: PropTypes.bool,
+  pushData: PropTypes.func,
 };
+ModalViewChecking.defaultProps = {
+  data: null,
+  onHide: null,
+  show: false,
+  pushData: null,
+}
 
 export default withStyles(useStyles)(ModalViewChecking);
