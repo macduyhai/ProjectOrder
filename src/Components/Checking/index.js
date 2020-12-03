@@ -74,7 +74,7 @@ class todoList extends Component {
       modalScan: false,
     };
 
-    this.itemsPerPage = 10;
+    this.itemsPerPage = 15;
   }
 
   async componentDidMount() {
@@ -111,11 +111,13 @@ class todoList extends Component {
         items: array_data[0].items,
         lableDetails: array_data[0].lableDetails,
       }
-      this.setState({
-        listData: this.state.listData.concat(data_push)
-      }, () => {
-        this.PaginationPage(this.state.activePage)
-      })
+      if(this.state.listData.every(every => every.orderNumber !== data_push.orderNumber)){
+        this.setState({
+          listData: this.state.listData.concat(data_push)
+        }, () => {
+          this.PaginationPage(this.state.activePage)
+        })
+      }
     }else{
       swal({
         title: 'Error',
@@ -127,11 +129,13 @@ class todoList extends Component {
   }
 
   pushDataToList = (data) => {
-    this.setState({
-      listData: this.state.listData.concat(data)
-    }, () => {
-      this.PaginationPage(this.state.activePage)
-    })
+    if(this.state.listData.every(every => every.orderNumber !== data.orderNumber)){
+      this.setState({
+        listData: this.state.listData.concat(data)
+      }, () => {
+        this.PaginationPage(this.state.activePage)
+      })
+    }
   }
 
   PaginationPage = (activePage) => {
@@ -178,7 +182,7 @@ class todoList extends Component {
         <div className="m-portlet__body">
           <div className="row">
             <div className="pb-3 col-md-12 d-flex justify-content-between">
-              <div>
+              <div className='d-inline-block'>
                 <Input
                   className='mr-2'
                   placeholder="Enter Partner TrackNumber..."
@@ -217,6 +221,10 @@ class todoList extends Component {
                 >
                   Add
               </Button>
+                <div className='d-inline-block ml-5' style={{ fontSize: 18 }}>
+                  Total Order: <b>{this.state.listData.length}</b>
+              </div>
+
               </div>
               <Button
                   variant="contained"
@@ -292,24 +300,37 @@ class todoList extends Component {
                         <td>{Moment(value.created_at).format("DD-MM-YYYY")}</td>
                         <td>{Status}</td>
                         <td width={80} style={{ padding: "0px" }}>
-                          <IconButton
-                            aria-label="view"
-                            color="primary"
-                          >
-                            <VisibilityIcon />
-                          </IconButton>
+                          <Button onClick={() => {
+                            this.setState({
+                              itemViewData: value
+                            },() => {
+                              this.setState({
+                                modalScan: true,
+                              })
+                            })
+                          }}>
+                            <IconButton
+                              aria-label="view"
+                              color="primary"
+                            >
+                              <VisibilityIcon />
+                            </IconButton>
+                          </Button>
                         </td>
                       </tr>
                     );
                   })}
                 </tbody>
               </Table>
-              <ModalViewChecking
-                data={this.state.itemViewData}
-                show={this.state.modalScan}
-                onHide={this.modalClose}
-                pushData={this.pushDataToList}
-              />
+              {
+                this.state.modalScan &&
+                <ModalViewChecking
+                  data={this.state.itemViewData}
+                  show={this.state.modalScan}
+                  onHide={this.modalClose}
+                  pushData={this.pushDataToList}
+                />
+              }
               <Pagination
                 activePage={this.state.activePage}
                 itemsCountPerPage={this.itemsPerPage}

@@ -134,7 +134,7 @@ class todoList extends Component {
       listErrorOrder: [],
     };
 
-    this.itemsPerPage = 10;
+    this.itemsPerPage = 15;
   }
 
   componentDidMount() {
@@ -628,7 +628,7 @@ class todoList extends Component {
                   array_error.push({
                     orderNumber: items.orderNumber,
                     name: items.name,
-                    message: 'Check items',
+                    message: 'TypeProduct not found',
                   })
                   error++;
                 }else{

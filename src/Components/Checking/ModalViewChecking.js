@@ -26,17 +26,22 @@ class ModalViewChecking extends Component {
       loadingNote: false,
       listItem: [],
       valueInput: '',
+      partner: '',
+      loading: false,
     };
+    this._input = React.createRef();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.show === true) {
+  componentDidMount() {
+    this._input.current.focus();
+    if (this.props.show === true && this.props.data) {
       //dataView
       this.setState({
-          dataView: nextProps.data,
+          dataView: this.props.data,
         });
     }
   }
+  
   getData = async (data) => {
     const result = await Axios({
       method: 'GET',
@@ -59,27 +64,47 @@ class ModalViewChecking extends Component {
 
     })
   }
+  
 
   handleEnter = async (e) => {
     if(e.key === 'Enter'){
-      const data = await this.getData(e.target.value);
       this.setState({
-        dataView: {
-          ...data[0].Order,
-          lableDetails: data[0].lableDetails,
-          items: data[0].items,
-        },
-      },() => {
-        this.props.pushData({
-          ...this.state.dataView,
-        })
+        loading: true,
       })
+      const data = await this.getData(e.target.value);
+      if(data.length > 0){
+        this.setState({
+          dataView: {
+            ...data[0].Order,
+            lableDetails: data[0].lableDetails,
+            items: data[0].items,
+          },
+        },() => {
+          this.props.pushData({
+            ...this.state.dataView,
+          })
+          this.setState({
+            partner: this.state.valueInput,
+            valueInput: '',
+          })
+        })
+      }else{
+        this.setState({
+          partner: this.state.valueInput,
+          valueInput: '',
+          dataView: null,
+        })
+      }
+      this.setState({
+        loading: false,
+      })
+      this._input.current.focus();
     }
   }
 
   render() {
     const { classes, show, onHide } = this.props;
-    const { dataView } = this.state;
+    const { dataView, partner } = this.state;
     return (
       <Modal
         show={show}
@@ -94,13 +119,20 @@ class ModalViewChecking extends Component {
               <span>
                 Order Number: <b>{dataView !== null && dataView.orderNumber}</b>
               </span>
-              <input style={{width: 300}} onKeyDown={(e) => this.handleEnter(e)} onChange={(e) => this.handleOnChange(e)} className='form-control' placeholder='Partner TrackingNumber...' value={this.state.valueInput}/>
+              <input type='text' style={{width: 300}} 
+              onKeyDown={(e) => this.handleEnter(e)} onChange={(e) => this.handleOnChange(e)} 
+              className='form-control' placeholder='Partner TrackingNumber...' 
+              value={this.state.valueInput}
+              ref={this._input}
+                disabled={this.state.loading}
+              />
             </div>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form id="formAddGroup">
             <div className="col-xl-12 mt-3 pl-0 pr-0">
+              <div style={{ marginBottom: 10 }}>{`Partner Tracking Number: ${partner}`}</div>
               <Table bordered hover>
                 <thead>
                   <tr>
