@@ -139,6 +139,6 @@ body {
 }
 @media print {
   .print {
-    display: none;
+    display: block !important;
   }
 }
