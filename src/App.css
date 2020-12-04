@@ -1,16 +1,16 @@
-html{
+html {
   height: 100%;
   width: 100%;
 }
-body{
+body {
   height: 100%;
-  background-color: #fff!important;
-  font-size: 13px!important;
+  background-color: #fff !important;
+  font-size: 13px !important;
 }
 
 .MuiBox-root {
-  padding-left: 0!important;
-  padding-right: 0!important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 .highcharts-credits {
   display: none;
@@ -44,7 +44,7 @@ body{
   color: white;
 }
 .MuiAppBar-root {
-  z-index: 1000!important;
+  z-index: 1000 !important;
 }
 .App-link {
   color: #61dafb;
@@ -94,7 +94,7 @@ body{
 .pagination li:first-child {
   margin-left: 0px;
 }
-.pagination{
+.pagination {
   float: right;
 }
 .pagination .active a {
@@ -109,31 +109,36 @@ body{
   background-color: #fff;
   border-color: #dee2e6;
 }
-.form_link  a{
-  color: rgba(0, 0, 0, 0.87)!important;
+.form_link a {
+  color: rgba(0, 0, 0, 0.87) !important;
 }
-.form_link  a:hover{
-  text-decoration: none!important;
+.form_link a:hover {
+  text-decoration: none !important;
 }
-.form_link a.active>.MuiButtonBase-root {
+.form_link a.active > .MuiButtonBase-root {
   background: #9e9e9e40;
 }
 
-.custom_alert_order{
-  padding-top:50px;
+.custom_alert_order {
+  padding-top: 50px;
   padding-bottom: 50px;
 }
-.custom_alert_order .swal2-header h2{
+.custom_alert_order .swal2-header h2 {
   font-size: 25px;
 }
-.custom_alert_order .swal2-content{
+.custom_alert_order .swal2-content {
   font-size: 18px;
 }
-.custom_alert_order .swal2-actions{
-  flex-direction: column!important;
+.custom_alert_order .swal2-actions {
+  flex-direction: column !important;
 }
 
-.modal_view{
+.modal_view {
   display: flex;
   justify-content: space-between;
+}
+@media print {
+  .print {
+    display: none;
+  }
 }
