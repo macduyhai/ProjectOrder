@@ -137,8 +137,11 @@ body {
   display: flex;
   justify-content: space-between;
 }
+.is_print{
+  display: none;
+}
 @media print {
-  .print {
+  .is_print {
     display: block !important;
   }
 }

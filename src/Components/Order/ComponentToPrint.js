@@ -5,7 +5,7 @@ export class ComponentToPrint extends React.PureComponent {
     const { data } = this.props;
     if (!data) return <></>;
     return (
-      <div  className="print" style={{display: "none"}}>
+      <div className="is_print">
         {data.map(map => (
           <div style={{ textAlign: 'center' }}>
             <img style={{ width: '1000px', height: '1500px' }} src={map.lableDetails.url} alt="" />

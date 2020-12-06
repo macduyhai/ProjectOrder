@@ -34,6 +34,7 @@ function ModalViewPrint(props) {
     const [crrData, setCrrData] = useState([]);
     const [checkAll, setCheckALl] = useState(true);
     const [dataImage, setDataImage] = useState([]);
+    const [listOrder, setListOrder] = useState([]);
 
     const [checkBox, setCheckBox] = useState([]);
 
@@ -51,21 +52,24 @@ function ModalViewPrint(props) {
             orderNumber.push(value.orderNumber);
             listImage.push(value);
         });
-        const dataPost = {
-            orderNumber: orderNumber,
-            printstatus: 1,
-        }
         setDataImage(listImage);
-        const status = await printsOrderApi(dataPost);
-        if (status === 200) {
-            printData();
-            handleClose();
-        } else {
-            swal('Error', '', 'error');
-        }
+        setListOrder(orderNumber);
     };
-    const printData = useReactToPrint({
+    const printData =  useReactToPrint({
         content: () => componentRef.current,
+        onAfterPrint: async () => {
+            const dataPost = {
+                orderNumber: listOrder,
+                printstatus: 1,
+            }
+            const status = await printsOrderApi(dataPost);
+            if (status === 200) {
+                handleClose();
+            } else {
+                swal('Error', '', 'error');
+            }
+            
+        }
     })
 
     const handleChangeSelect = async (e) => {
@@ -146,6 +150,12 @@ function ModalViewPrint(props) {
             setCheckBox([...checkBox, i])
         }
     }
+
+    useEffect(() => {
+        if(dataImage.length > 0){
+            printData();
+        }
+    }, [dataImage])
 
     useEffect(() => {
         if (!open) {
